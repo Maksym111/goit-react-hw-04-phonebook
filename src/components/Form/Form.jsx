@@ -1,65 +1,57 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { BtnAdd, Form, Input, Title } from './Form.styled';
 
-class PhoneBookForm extends Component {
-  state = {
-    name: '',
-    number: '',
-  };
+const PhoneBookForm = ({ onSubmitForm }) => {
+  const [contactName, setContactName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
 
-  handleInput = e => {
+  const handleInput = e => {
     const { name, value } = e.target;
 
-    this.setState({
-      [name]: value,
-    });
+    if (name === 'name') {
+      setContactName(value);
+    } else if (name === 'number') {
+      setContactNumber(value);
+    }
   };
 
-  addNewName = e => {
+  const addNewName = e => {
     e.preventDefault();
     const { name, number } = e.target.elements;
 
-    this.props.onSubmit(this.state);
+    onSubmitForm(contactName, contactNumber);
 
-    this.setState(
-      {
-        name: '',
-        number: '',
-      },
-      () => {
-        name.value = '';
-        number.value = '';
-      }
-    );
+    setContactName('');
+    setContactNumber('');
+    name.value = '';
+    number.value = '';
   };
 
-  render() {
-    return (
-      <Form action="" onSubmit={this.addNewName}>
-        <Title>Name</Title>
-        <Input
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-          onChange={this.handleInput}
-        />
+  return (
+    <Form action="" onSubmit={addNewName}>
+      <Title>Name</Title>
+      <Input
+        type="text"
+        name="name"
+        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+        required
+        onChange={handleInput}
+      />
 
-        <Title>Number</Title>
-        <Input
-          type="tel"
-          name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          onChange={this.handleInput}
-        />
+      <Title>Number</Title>
+      <Input
+        type="tel"
+        name="number"
+        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+        required
+        onChange={handleInput}
+      />
 
-        <BtnAdd type="submit">Add contact</BtnAdd>
-      </Form>
-    );
-  }
-}
+      <BtnAdd type="submit">Add contact</BtnAdd>
+    </Form>
+  );
+};
 
 export default PhoneBookForm;

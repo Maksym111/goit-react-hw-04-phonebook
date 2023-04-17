@@ -1,18 +1,16 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import Contacts from '../Contacts';
 import Form from '../Form';
 import SectionTitle from '../SectionTitle';
 import { nanoid } from 'nanoid';
 import { Container } from './App.styled';
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-  formSubmitHandler = ({ name, number }) => {
-    const checkedName = this.state.contacts.find(elem => {
+  const formSubmitHandler = (name, number) => {
+    const checkedName = contacts.find(elem => {
       return elem.name === name;
     });
 
@@ -27,57 +25,45 @@ class App extends Component {
       number,
     };
 
-    this.setState(prevState => {
-      const ContactsArr = [...prevState.contacts];
-      ContactsArr.push(newContact);
-      return {
-        name,
-        number,
-        contacts: [...ContactsArr],
-      };
+    setContacts(prevContacts => {
+      let abs = [...prevContacts, newContact];
+      return abs;
     });
   };
 
-  onItemDelete = id => {
-    this.setState(({ contacts }) => {
-      const newContacts = [...contacts];
+  const onFilterSearch = e => {
+    setFilter(e.target.value);
+  };
+
+  const onItemDelete = id => {
+    setContacts(prevContacts => {
+      const newContacts = [...prevContacts];
       const index = newContacts.findIndex(elem => elem.id === id);
       newContacts.splice(index, 1);
-      return {
-        contacts: [...newContacts],
-      };
+      return newContacts;
     });
   };
 
-  onFilterSearch = e => {
-    this.setState({
-      filter: e.target.value,
-    });
-  };
-
-  render() {
-    const { filter, contacts } = this.state;
-
+  const filteredSearch = () => {
     const normaliseFilter = filter.toLowerCase();
-    const filteredSearch = contacts.filter(elem =>
+    return contacts.filter(elem =>
       elem.name.toLowerCase().includes(normaliseFilter)
     );
+  };
 
-    return (
-      <Container>
-        <SectionTitle title="Phonebook" />
-        <Form onSubmit={this.formSubmitHandler} />
-        <Contacts
-          title={'Contacts'}
-          contacts={filteredSearch}
-          onSearch={this.onSearchType}
-          filter={filter}
-          onFilter={this.onFilterSearch}
-          onItemDelete={this.onItemDelete}
-        />
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <SectionTitle title="Phonebook" />
+      <Form onSubmitForm={formSubmitHandler} />
+      <Contacts
+        title={'Contacts'}
+        contacts={filteredSearch()}
+        filter={filter}
+        onFilter={onFilterSearch}
+        onItemDelete={onItemDelete}
+      />
+    </Container>
+  );
+};
 
 export default App;
